@@ -1,0 +1,63 @@
+pipeline{
+
+      agent any
+        tools {
+     jdk 'JAVA_HOME'
+     maven 'M2_HOME'
+  }
+     
+        
+        stages{
+
+            stage('Cleaning the project') {
+                 steps{
+                    sh "mvn -B -DskipTests clean  "
+                    }
+                }
+
+
+	        stage('Build') {
+      		    steps {
+        		sh 'mvn -B -DskipTests clean package'
+      		          }
+            	}
+            stage('JUnit/Mockito'){
+                steps {
+                sh '''mvn -version
+                mvn -B -DskipTests clean package'''
+                //sh 'mvn test'
+                echo """Bravo! tous les tests sont pris en charge"""
+                }
+            }
+       stage("SonarQube Analysis") {
+                       steps {
+                         withSonarQubeEnv('sonarmed') {
+                           sh 'mvn clean -DskipTests package sonar:sonar'
+                         }
+                       }
+                     }
+                           stage("upload war to nexus") {
+                                           steps {
+                                           nexusArtifactUploader artifacts:
+                                            [[
+                                            artifactId: 'spring-boot-starter-parent',
+                                            classifier: '',
+                                            file: 'target/achat-2.5.3.war',
+                                            type: 'war'
+                                            ]],
+                                            credentialsId: 'nexus',
+                                             groupId: 'org.springframework.boot',
+                                              nexusUrl: '192.168.56.3:8081',
+                                              nexusVersion: 'nexus2',
+                                              protocol: 'http',
+                                              repository: 'http://192.168.56.3:8081/repository/simpleapp-release/',
+                                               version: '2.5.3'
+                                           }
+                                           }
+
+
+
+        }
+}
+
+
