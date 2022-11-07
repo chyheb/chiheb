@@ -25,17 +25,26 @@ pipeline{
                 steps {
                 sh '''mvn -version
                 mvn -B -DskipTests clean package'''
+<<<<<<< Updated upstream
                 //sh 'mvn test'
+=======
+              git fetch --all  //sh 'mvn test'
+>>>>>>> Stashed changes
                 echo """Bravo! tous les tests sont pris en charge"""
                 }
             }
        stage("SonarQube Analysis") {
                        steps {
+<<<<<<< Updated upstream
                          withSonarQubeEnv('sonarmed') {
+=======
+                         withSonarQubeEnv('sonar') {
+>>>>>>> Stashed changes
                            sh 'mvn clean -DskipTests package sonar:sonar'
                          }
                        }
                      }
+<<<<<<< Updated upstream
                            stage("upload war to nexus") {
                                            steps {
                                            nexusArtifactUploader artifacts:
@@ -54,6 +63,9 @@ pipeline{
                                                version: '2.5.3'
                                            }
                                            }
+=======
+
+>>>>>>> Stashed changes
 
 
 
